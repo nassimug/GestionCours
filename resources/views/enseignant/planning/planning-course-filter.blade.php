@@ -1,0 +1,183 @@
+@extends('modele')
+@section('title', 'Planing par cours')
+@section('contents')
+
+<!-- CSS Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl7/1L_dstPt3HV5HzF6Gvk/e3I5By5cIv5p5Uw8GU" crossorigin="anonymous">
+<!-- Icones FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha384-4lY7N4DpZhh0NBS3DlG/6Jg/6Q2Td1C40Xb+D8RJrsd12l7FjRw8oVtrUymzakLm" crossorigin="anonymous">
+<!-- CSS personnalisé -->
+<style>
+.navbar {
+    background-color: #000;
+}
+
+.nav-link {
+    margin-right: 5px;
+    color: #fff;
+}
+
+.nav-link:hover {
+    color: #ffa400;
+}
+
+.navbar-brand span {
+    background-color: #ffa400;
+    padding: 0px 5px;
+}
+
+.navbar-collapse {
+    margin: auto;
+}
+
+.card-header {
+    background-color: #343a40;
+    color: #fff;
+    font-weight: bold;
+}
+</style>
+<!--------------------- NavBar ------------------------------->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{{route('enseignant.home')}}">
+            <img src="{{ asset('images/logo.png') }}" alt="UPEC Logo" height="40">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+
+                <li class="nav-item first-nav-item">
+                    <a class="nav-link" href="{{route('enseignant.cours.index')}}"><i class="fas fa-users"></i>
+                        Liste des cours</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-cog"></i> Planning
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{{route('enseignant.planning-integral')}}">Intégral</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{route('filter-seances-by-course-separate')}}">Par cours</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{route('filter-seances-by-week-separate')}}">Par semaine</a>
+                        </li>
+
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-cog"></i> Paramètres
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="{{route('enseignant.account.edit')}}">Changer MDP</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                                href="{{route('enseignant.account.editNomPrenom',['id'=>Auth::user()->id])}}">Modifier
+                                nom/prénom</a></li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Scripts Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+    integrity="sha384-oBqDVmMz4fnFO9gybB5IXl1zP/fwZZ8X//R8eB4x9/0tgRmM2q2rz25fIRutir3/" crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl7/1L_dstPt3HV5HzF6Gvk/e3I5By5cIv5p5Uw8GU" crossorigin="anonymous">
+</script>
+
+
+<div class="container">
+
+    <div class="btn-group">
+        <button style="margin: 20px 0px 20px 0px;" type="button" class="btn btn-info" data-bs-toggle="modal"
+            data-bs-target="#filterByCourseModal">
+            <i class="bi bi-filter-left"></i> Intitulé du cours
+        </button>
+        <!-- Modal pour filtrer par cours -->
+        <div class="modal fade" id="filterByCourseModal" tabindex="-1" aria-labelledby="filterByCourseModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="filterByCourseModalLabel">Filtrer par cours</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{{ route('filter-seances-by-course-separate') }}">
+                            @csrf
+                            <label for="course_intitule">- Cours :</label>
+                            <select name="course_intitule" id="course_intitule">
+                                @foreach($cours as $course)
+                                <option value="{{ $course->intitule }}">{{ $course->intitule }}</option>
+                                @endforeach
+                            </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Valider</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <a href="{{ route('enseignant.seance.create') }}" class="btn btn-info" style="margin: 20px 0px 20px 0px;"><i
+            class="bi bi-plus-circle"></i> Ajouter une séance</a>
+
+    <table class="table table-hover caption-top text-center" style="box-shadow: 5px 10px 20px rgba(0,0,0, 0.3);">
+        <caption>Liste des séances</caption>
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Cours</th>
+                <th scope="col">Date et heure de début</th>
+                <th scope="col">Date et heure de fin</th>
+                <th scope="col">Modifier</th>
+                <th scope="col">Supprimer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($planning as $seance)
+            <tr>
+                <td>{{ $seance->cours->intitule }}</td>
+                <td>{{ \Carbon\Carbon::parse($seance->date_debut)->format('d-m-Y H:i') }}</td>
+                <td>{{ \Carbon\Carbon::parse($seance->date_fin)->format('d-m-Y H:i') }}</td>
+                <td>
+                    <a href="{{ route('enseignant.seance.edit', ['id' => $seance->id]) }}" class="btn btn-primary"><i
+                            class="bi bi-pencil-square"></i> Modifier</a>
+                </td>
+                <td>
+                    <form action="{{ route('enseignant.seance.delete', ['id' => $seance->id]) }}" method="post"
+                        class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette séance ?');">
+                            <i class="bi bi-trash3"></i> Supprimer
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-center">
+        {{ $planning->links() }}
+    </div>
+</div>
+
+@endsection
